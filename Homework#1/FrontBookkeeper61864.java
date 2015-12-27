@@ -8,6 +8,7 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 
 	private Map<String, LinkedList<Integer>> units = new HashMap<>();
 	private Map<String, String> attachments = new HashMap<>();
+	private Map<String, String> attached = new HashMap<>();
 
 	@Override
 	public void updateFront(String[] news) {
@@ -60,17 +61,18 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 
 	private void show(String command) {
 		int index = command.lastIndexOf(' ') + 1;
+
 		if (command.contains("soldier")) {
 			int soldierID = Integer.parseInt(command.substring(index));
-			LinkedList<String> lst = new LinkedList<>();
+			LinkedList<String> list = new LinkedList<>();
 
 			for (Map.Entry<String, LinkedList<Integer>> entry : units.entrySet()) {
 				if (entry.getValue().contains(soldierID)) {
-					lst.add(entry.getKey());
+					list.add(entry.getKey());
 				}
 			}
 
-			printAttachments(lst);
+			printAttachments(list);
 
 		} else {
 			String name = command.substring(index);
@@ -83,7 +85,7 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 			if (i != list.size() - 1) {
 				System.out.print(list.get(i) + ", ");
 			} else {
-				System.out.print(list.get(i)+ "\n");
+				System.out.print(list.get(i) + "\n");
 			}
 		}
 	}
@@ -110,22 +112,28 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 	}
 
 	private void die(String command) {
-		int sol1 = Integer.parseInt(command.substring(command.indexOf(' ') + 1, command.indexOf('.')));
-		int sol2 = Integer.parseInt(command.substring(command.lastIndexOf('.') + 1, command.indexOf("from") - 1));
+
+		int low = Integer.parseInt(command.substring(command.indexOf(' ') + 1, command.indexOf('.')));
+		int high = Integer.parseInt(command.substring(command.lastIndexOf('.') + 1, command.indexOf("from") - 1));
 		String unit = command.substring(command.indexOf("from") + 5, command.indexOf("died") - 1);
-		LinkedList<Integer> lst = new LinkedList<>();
-		int j = sol1;
-		for (int i = sol1; i <= sol2; i++) {
-			lst.add(j++);
+
+		LinkedList<Integer> list = new LinkedList<>();
+
+		int j = low;
+
+		for (int i = low; i <= high; i++) {
+			list.add(j++);
 		}
+
 		Queue<String> queue = new LinkedList<>();
 		queue.add(unit);
+
 		while (!queue.isEmpty()) {
 			String currentUnit = queue.poll();
 			for (Map.Entry<String, String> entry : attachments.entrySet()) {
 				if (entry.getValue().contains(currentUnit)) {
-					units.get(currentUnit).removeAll(lst);
-					units.get(entry.getKey()).removeAll(lst);
+					units.get(currentUnit).removeAll(list);
+					units.get(entry.getKey()).removeAll(list);
 					queue.add(entry.getKey());
 					break;
 				}
@@ -145,12 +153,6 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 				"show brigade_Ignatov", "show division_Dimitroff" };
 		FrontBookkeeper61864 f = new FrontBookkeeper61864();
 		f.updateFront(news);
-		// f.die("soldiers 2..3 from division_Dimitroff died heroically ");
-		// System.out.println("Units listed below:");
-		// for (String key : f.attachments.keySet()) {
-		// System.out.println(key + " - " + f.attachments.get(key));
-		// }
-
 	}
 
 }
