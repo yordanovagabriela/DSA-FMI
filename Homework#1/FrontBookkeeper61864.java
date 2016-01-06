@@ -1,14 +1,17 @@
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 
 public class FrontBookkeeper61864 implements IFrontBookkeeper {
 
-	private Map<String, LinkedList<Integer>> units = new HashMap<>();
-	private Map<String, String> attachments = new HashMap<>();
-	private Map<String, String> attached = new HashMap<>();
+	private Map<String, LinkedList<Integer>> units;
+	private Map<String, String> attachments;
+
+    public FrontBookkeeper61864() {
+        attachments = new HashMap<>();
+        units = new HashMap<>();
+    }
 
 	@Override
 	public void updateFront(String[] news) {
@@ -31,13 +34,10 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 		int index;
 
 		if (command.contains("after soldier")) {
-
 			int soldierID = Integer.parseInt(command.substring(command.lastIndexOf(' ') + 1));
 			unitSecond = command.substring(command.indexOf("to") + 3, command.indexOf("after") - 1);
 			index = units.get(unitSecond).indexOf(soldierID) + 1;
-
 		} else {
-
 			unitSecond = command.substring(command.lastIndexOf(' ') + 1);
 			index = units.get(unitSecond).size();
 
@@ -47,10 +47,9 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 	}
 
 	private void attach(String unitFirst, String unitSecond, int index) {
+		String attachm = attachments.get(unitFirst);
 		if (attachments.containsKey(unitFirst)) {
-			String attached = attachments.get(unitFirst);
-
-			units.get(attached).removeAll(units.get(unitFirst));
+			units.get(attachm).removeAll(units.get(unitFirst));
 			attachments.replace(unitFirst, unitSecond);
 
 		} else {
@@ -71,7 +70,6 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 					list.add(entry.getKey());
 				}
 			}
-
 			printAttachments(list);
 
 		} else {
@@ -112,17 +110,14 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 	}
 
 	private void die(String command) {
-
 		int low = Integer.parseInt(command.substring(command.indexOf(' ') + 1, command.indexOf('.')));
 		int high = Integer.parseInt(command.substring(command.lastIndexOf('.') + 1, command.indexOf("from") - 1));
 		String unit = command.substring(command.indexOf("from") + 5, command.indexOf("died") - 1);
 
 		LinkedList<Integer> list = new LinkedList<>();
-
-		int j = low;
-
+		int temp = low;
 		for (int i = low; i <= high; i++) {
-			list.add(j++);
+			list.add(temp++);
 		}
 
 		Queue<String> queue = new LinkedList<>();
@@ -131,7 +126,7 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 		while (!queue.isEmpty()) {
 			String currentUnit = queue.poll();
 			for (Map.Entry<String, String> entry : attachments.entrySet()) {
-				if (entry.getValue().contains(currentUnit)) {
+				if (entry.getValue().equals(currentUnit)) {
 					units.get(currentUnit).removeAll(list);
 					units.get(entry.getKey()).removeAll(list);
 					queue.add(entry.getKey());
@@ -154,5 +149,4 @@ public class FrontBookkeeper61864 implements IFrontBookkeeper {
 		FrontBookkeeper61864 f = new FrontBookkeeper61864();
 		f.updateFront(news);
 	}
-
 }
