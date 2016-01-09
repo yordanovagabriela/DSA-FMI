@@ -1,10 +1,8 @@
-
 public class Treasure {
 
 	private String name;
 	private int weight;
 	private int value;
-	private int level;
 
 	public Treasure(String name, int value, int weight) {
 		this.name = name;
@@ -12,18 +10,6 @@ public class Treasure {
 		this.weight = weight;
 	}
 		
-	public Treasure(Treasure tr) {
-		this.name = tr.name;
-		this.weight = tr.weight;
-		this.value = tr.value;
-		this.level = tr.level;
-	}
-	
-	public Treasure(String name, int value, int weight,int level) {
-		this(name,value,weight);
-		this.level = level;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -52,12 +38,5 @@ public class Treasure {
 		return this.name + " " + this.value + " " + this.weight;
 	}
 
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
-	}
 
 }

@@ -1,13 +1,10 @@
 import java.util.List;
 
-public class KnapsackDSolver {
+public class KnapsackDSolver extends KnapsackSolver {
 	
 	private List<Treasure> treasures;
 	private int[][] dp;
 	private int[][] tracker;
-	private int optimalSolution;
-	private int capacity;
-	private int numberOfItems;
 	
 	public KnapsackDSolver(int capacity, String file) {
 		this.treasures = (new TreasuresGenerator(file)).getTreasures();
@@ -44,7 +41,7 @@ public class KnapsackDSolver {
 		optimalSolution = dp[numberOfItems][capacity];
 	}
 
-	private void printTracker() {
+	public void printTracker() {
 		System.out.printf("The optimal solution is %s.\n", optimalSolution);
 		System.out.println("The most valuable items I can take are:");
 

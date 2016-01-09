@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -12,10 +11,8 @@ public class TreasuresGenerator {
 	private final static int WEIGHT = 2;
 	
 	private List<Treasure> treasures;
-	private String file;
-	
+
 	public TreasuresGenerator(String file) {
-		this.file = file;
 		this.treasures = new ArrayList<>();
 		this.generateTreasures(file);
 	}

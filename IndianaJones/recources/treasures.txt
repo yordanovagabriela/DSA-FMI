@@ -1,4 +1,4 @@
-chocolate 10 2
-golden-horn 100 10
-Skyrim 200 5
-baba 20 7
+chocolate 40 2
+golden-horn 30 5
+apple 50 10
+Skyrim 10 5

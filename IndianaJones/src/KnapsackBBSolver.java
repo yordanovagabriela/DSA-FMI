@@ -1,20 +1,17 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class KnapsackBBSolver {
+public class KnapsackBBSolver extends KnapsackSolver {
 
 	private List<Treasure> treasures;
-	private Queue<Treasure> queue;
+	private List<Node> nodes;
+	private Queue<Node> queue;
 	private int[] v;
 	private int[] w;
-	private int optimalSolution;
-	private int capacity;
-	private int numberOfItems;
 
-	public KnapsackBBSolver(int capacity,String file) {
+	public KnapsackBBSolver(int capacity, String file) {
 		this.treasures = (new TreasuresGenerator(file)).getTreasures();
 		this.v = treasures.stream().mapToInt(Treasure::getValue).toArray();
 		this.w = treasures.stream().mapToInt(Treasure::getWeight).toArray();
@@ -25,57 +22,76 @@ public class KnapsackBBSolver {
 	}
 
 	public void solve() {
-		knapsackBB();
-		System.out.printf("The optimal solution is %s.", optimalSolution);
+		knapsack();
+		printTracker();
 	}
-	
-	public void knapsackBB() {
 
-		List<String> lst = new ArrayList<>();
-		Treasure p = new Treasure(null, 0, 0, 0);
-		Treasure q;
-		queue.add(p);
+	public void knapsack() {
+		nodes = new ArrayList<>();
+		Node initial = new Node();
+		Node childOrNot;
+
+		nodes.add(initial);
+		queue.add(initial);
 
 		while (!queue.isEmpty()) {
-			Treasure curr = queue.poll();
+			Node current = queue.poll();
 
-			int level = curr.getLevel() + 1;
-			int weight = curr.getWeight() + w[level - 1];
-			int value = curr.getValue() + v[level - 1];
-			String name = treasures.get(level - 1).getName();
+			childOrNot = new Node();
+			childOrNot.setL(current.getL() + 1);
+			childOrNot.setW(current.getW() + w[childOrNot.getL() - 1]);
+			childOrNot.setV(current.getV() + v[childOrNot.getL() - 1]);
 
-			q = new Treasure(name, value, weight, level);
+			Treasure currentTreasure = treasures.get(childOrNot.getL() - 1);
 
-			if (q.getWeight() <= capacity && q.getValue() > optimalSolution) {
-				optimalSolution = q.getValue();
+			if (childOrNot.getW() <= capacity && childOrNot.getV() > optimalSolution) {
+				optimalSolution = childOrNot.getV();
 			}
 
-			if (bound(q) > optimalSolution) {
-				queue.add(new Treasure(q));
+			if (bound(childOrNot) > optimalSolution) {
+				childOrNot.getTreasures().addAll(current.getTreasures());
+				childOrNot.getTreasures().add(currentTreasure);
+
+				queue.add(new Node(childOrNot));
+				nodes.add(new Node(childOrNot));
 			}
-			
-			q.setWeight(curr.getWeight());
-			q.setValue(curr.getValue());
-			
-			if (bound(q) > optimalSolution) {
-				queue.add(new Treasure(q));
+
+			childOrNot.setW(current.getW());
+			childOrNot.setV(current.getV());
+
+			if (bound(childOrNot) > optimalSolution) {
+				childOrNot.setTreasures(current.getTreasures());
+				queue.add(new Node(childOrNot));
+				nodes.add(new Node(childOrNot));
 			}
 
 		}
-		 //System.out.println(lst);
 	}
 
-	public float bound(Treasure q) {
+	public void printTracker() {
+		System.out.printf("The optimal solution is %s.\n", optimalSolution);
+		System.out.println("The most valuable items I can take are:");
+		for (Node n : nodes) {
+			if (n.getV() == optimalSolution) {
+				for (Treasure t : n.getTreasures()) {
+					System.out.println("+" + t);
+				}
+				break;
+			}
+		}
+	}
+	
+	public float bound(Node node) {
 		int j, k;
 		int totalWeight;
 		float result;
 
-		if (q.getWeight() >= capacity) {
+		if (node.getW() >= capacity) {
 			return 0;
 		} else {
-			result = q.getValue();
-			j = q.getLevel() + 1;
-			totalWeight = q.getWeight();
+			result = node.getV();
+			j = node.getL() + 1;
+			totalWeight = node.getW();
 			while (j <= numberOfItems && totalWeight + w[j - 1] <= capacity) {
 				totalWeight += w[j - 1];
 				result += v[j - 1];
@@ -88,4 +104,6 @@ public class KnapsackBBSolver {
 			return result;
 		}
 	}
+
+
 }
